@@ -1,0 +1,112 @@
+<!DOCTYPE html>
+<html lang="de">
+<head>
+    <meta charset="UTF-8">
+    <title>Album Bewertung</title>
+    <style>
+        body {
+            font-family: 'Comic Sans MS';
+            margin: 0;
+            padding: 20px;
+            background-color: #f4f4f4;
+        }
+        .container {
+            max-width: 600px;
+            margin: 0 auto;
+            padding: 20px;
+            background-color: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+        }
+        h1 {
+            font-size: 24px;
+            margin-bottom: 20px;
+        }
+        label {
+            display: block;
+            margin-top: 10px;
+        }
+        input[type="text"], input[type="number"] {
+            width: 100%;
+            padding: 10px;
+            margin-top: 5px;
+            margin-bottom: 10px;
+            box-sizing: border-box;
+        }
+        button {
+            padding: 10px 15px;
+            background-color: #ee9a00;
+            color: #fff;
+            border: none;
+            cursor: pointer;
+        }
+        button:hover {
+            background-color: #8b5a00;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Album Bewertung</h1>
+        <form id="bewertungsForm">
+            <label for="anzahl_songs">Anzahl der Songs im Album:</label>
+            <input type="number" id="anzahl_songs" required>
+
+            <label for="geliked_songs">Anzahl der Songs, die dir gefallen haben:</label>
+            <input type="number" id="geliked_songs" required>
+
+            <label for="on_repeat_songs">Anzahl der Songs, die du 'on repeat' hörst:</label>
+            <input type="number" id="on_repeat_songs" required>
+
+            <label for="persoenlicher_bonus">Möchtest du einen persönlichen Bonus geben? (Ja/Nein):</label>
+            <input type="text" id="persoenlicher_bonus" required>
+
+            <label for="mag_ich">Magst du das Album? (Ja/Nein):</label>
+            <input type="text" id="mag_ich" required>
+
+            <label for="persoenliches_rating">Wie würdest du das Album persönlich bewerten (1-10)?</label>
+            <input type="number" step="0.01" id="persoenliches_rating" required>
+
+            <button type="button" onclick="bewertungDurchfuehren()">Bewertung durchführen</button>
+        </form>
+
+        <div id="ergebnis" style="margin-top: 20px;"></div>
+    </div>
+
+    <script>
+        function albumBewertung(anzahl_songs, geliked_songs, on_repeat_songs, persoenlicher_bonus, mag_ich, persoenliches_rating) {
+            let anteil_geliked = geliked_songs / anzahl_songs;
+            let punkte_geliked = Math.round(anteil_geliked * 7 * 100) / 100;
+
+            let anteil_on_repeat = on_repeat_songs / anzahl_songs;
+            let punkte_on_repeat = Math.round(anteil_on_repeat * 2 * 100) / 100;
+
+            let punkte_persoenlich = persoenlicher_bonus ? 1 : 0;
+
+            let gesamt_punkte = punkte_geliked + punkte_on_repeat + punkte_persoenlich;
+
+            if (mag_ich && gesamt_punkte < 6) {
+                gesamt_punkte += 1.5;
+            }
+
+            gesamt_punkte = (gesamt_punkte + persoenliches_rating) / 2;
+
+            gesamt_punkte = Math.min(gesamt_punkte, 10);
+
+            return Math.round(gesamt_punkte * 100) / 100;
+        }
+
+        function bewertungDurchfuehren() {
+            let anzahl_songs = parseInt(document.getElementById('anzahl_songs').value);
+            let geliked_songs = parseInt(document.getElementById('geliked_songs').value);
+            let on_repeat_songs = parseInt(document.getElementById('on_repeat_songs').value);
+            let persoenlicher_bonus = document.getElementById('persoenlicher_bonus').value.trim().toLowerCase() === 'ja';
+            let mag_ich = document.getElementById('mag_ich').value.trim().toLowerCase() === 'ja';
+            let persoenliches_rating = parseFloat(document.getElementById('persoenliches_rating').value);
+
+            let bewertung = albumBewertung(anzahl_songs, geliked_songs, on_repeat_songs, persoenlicher_bonus, mag_ich, persoenliches_rating);
+
+            document.getElementById('ergebnis').innerText = `Die Gesamtbewertung des Albums ist: ${bewertung} von 10`;
+        }
+    </script>
+</body>
+</html>
