@@ -3,49 +3,87 @@
 <head>
     <meta charset="UTF-8">
     <title>Album Bewertung</title>
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
     <style>
         body {
-            font-family: 'Comic Sans MS';
+            font-family: 'Roboto', sans-serif;
             margin: 0;
             padding: 20px;
-            background-color: #f4f4f4;
+            background-color: #ffebee;
+            color: #333;
+            transition: background-color 0.5s, color 0.5s;
         }
         .container {
             max-width: 600px;
             margin: 0 auto;
             padding: 20px;
-            background-color: #fff;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
         }
         h1 {
-            font-size: 24px;
+            font-size: 28px;
             margin-bottom: 20px;
+            color: #d32f2f;
+            text-align: center;
         }
         label {
             display: block;
             margin-top: 10px;
+            font-weight: 700;
         }
         input[type="text"], input[type="number"] {
             width: 100%;
             padding: 10px;
             margin-top: 5px;
-            margin-bottom: 10px;
+            margin-bottom: 20px;
             box-sizing: border-box;
+            border: 1px solid #ccc;
+            border-radius: 5px;
         }
         button {
-            padding: 10px 15px;
-            background-color: #ee9a00;
+            display: block;
+            width: 100%;
+            padding: 15px;
+            background-color: #d32f2f;
             color: #fff;
             border: none;
+            border-radius: 5px;
+            font-size: 16px;
             cursor: pointer;
+            transition: background-color 0.3s;
         }
         button:hover {
-            background-color: #8b5a00;
+            background-color: #b71c1c;
+        }
+        #ergebnis {
+            margin-top: 20px;
+            font-size: 18px;
+            text-align: center;
+        }
+        .highlight {
+            font-weight: bold;
+        }
+        .color-picker {
+            position: absolute;
+            top: 20px;
+            right: 20px;
         }
     </style>
 </head>
 <body>
-    <div class="container">
+    <div class="color-picker">
+        <label for="colorSelect">Wähle eine Farbe:</label>
+        <select id="colorSelect" onchange="changeColor()">
+            <option value="#ffebee" data-text="#d32f2f" data-highlight="#1976d2">Rot</option>
+            <option value="#e8f5e9" data-text="#388e3c" data-highlight="#388e3c">Grün</option>
+            <option value="#e3f2fd" data-text="#1976d2" data-highlight="#1976d2">Blau</option>
+            <option value="#fff3e0" data-text="#f57c00" data-highlight="#f57c00">Orange</option>
+            <option value="#f3e5f5" data-text="#8e24aa" data-highlight="#8e24aa">Lila</option>
+            <option value="S80" data-text="#ffffff" data-highlight="#000000">S80</option>
+        </select>
+    </div>
+    <div class="container" id="container">
         <h1>Album Bewertung</h1>
         <form id="bewertungsForm">
             <label for="anzahl_songs">Anzahl der Songs im Album:</label>
@@ -69,10 +107,41 @@
             <button type="button" onclick="bewertungDurchfuehren()">Bewertung durchführen</button>
         </form>
 
-        <div id="ergebnis" style="margin-top: 20px;"></div>
+        <div id="ergebnis"></div>
     </div>
 
     <script>
+        function changeColor() {
+            const colorSelect = document.getElementById('colorSelect');
+            const selectedOption = colorSelect.options[colorSelect.selectedIndex];
+            const backgroundColor = selectedOption.value;
+            const textColor = selectedOption.getAttribute('data-text');
+            const highlightColor = selectedOption.getAttribute('data-highlight');
+            const container = document.getElementById('container');
+
+            if (backgroundColor === 'S80') {
+                document.body.style.backgroundImage = 'url("https://m.media-amazon.com/images/I/41+sBGxWEVL._UXNaN_FMjpg_QL85_.jpg")';
+                document.body.style.backgroundSize = 'cover';
+                document.body.style.backgroundRepeat = 'no-repeat';
+                document.body.style.backgroundPosition = 'center';
+                document.body.style.color = '#ffffff';
+                container.style.backgroundColor = '#000000';
+                document.querySelector('button').style.color = '#000000';
+            } else {
+                document.body.style.backgroundImage = '';
+                document.body.style.backgroundColor = backgroundColor;
+                document.body.style.color = textColor;
+                container.style.backgroundColor = '#ffffff';
+                document.querySelector('button').style.color = '#ffffff';
+            }
+
+            document.querySelector('h1').style.color = textColor;
+            document.querySelector('button').style.backgroundColor = textColor;
+            document.querySelector('button').style.borderColor = textColor;
+            document.querySelectorAll('label').forEach(label => label.style.color = textColor);
+            document.querySelectorAll('.highlight').forEach(highlight => highlight.style.color = highlightColor);
+        }
+
         function albumBewertung(anzahl_songs, geliked_songs, on_repeat_songs, persoenlicher_bonus, mag_ich, persoenliches_rating) {
             let anteil_geliked = geliked_songs / anzahl_songs;
             let punkte_geliked = Math.round(anteil_geliked * 7 * 100) / 100;
@@ -105,7 +174,26 @@
 
             let bewertung = albumBewertung(anzahl_songs, geliked_songs, on_repeat_songs, persoenlicher_bonus, mag_ich, persoenliches_rating);
 
-            document.getElementById('ergebnis').innerText = `Die Gesamtbewertung des Albums ist: ${bewertung} von 10`;
+            let ergebnisText = `Die Gesamtbewertung des Albums ist: `;
+            ergebnisText += `<span class="highlight">${bewertung}</span> von 10. `;
+            
+            if (bewertung <= 2) {
+                ergebnisText += "Dieses Album gefällt dir nicht.";
+            } else if (bewertung <= 3) {
+                ergebnisText += "Dieses Album gefällt dir nicht.";
+            } else if (bewertung <= 5) {
+                ergebnisText += "Dieses Album war in Ordnung.";
+            } else if (bewertung <= 6) {
+                ergebnisText += "Dieses Album war in Ordnung.";
+            } else if (bewertung <= 7) {
+                ergebnisText += "Dieses Album war gut.";
+            } else if (bewertung <= 8) {
+                ergebnisText += "Dieses Album war sehr gut.";
+            } else {
+                ergebnisText += "Dieses Album war fantastisch!";
+            }
+
+            document.getElementById('ergebnis').innerHTML = ergebnisText;
         }
     </script>
 </body>
