@@ -144,10 +144,10 @@
 
         function albumBewertung(anzahl_songs, geliked_songs, on_repeat_songs, persoenlicher_bonus, mag_ich, persoenliches_rating) {
             let anteil_geliked = geliked_songs / anzahl_songs;
-            let punkte_geliked = Math.round(anteil_geliked * 7 * 100) / 100;
+            let punkte_geliked = anteil_geliked * 7;
 
             let anteil_on_repeat = on_repeat_songs / anzahl_songs;
-            let punkte_on_repeat = Math.round(anteil_on_repeat * 2 * 100) / 100;
+            let punkte_on_repeat = anteil_on_repeat * 2;
 
             let punkte_persoenlich = persoenlicher_bonus ? 1 : 0;
 
@@ -161,7 +161,7 @@
 
             gesamt_punkte = Math.min(gesamt_punkte, 10);
 
-            return Math.round(gesamt_punkte * 100) / 100;
+            return gesamt_punkte.toFixed(2);
         }
 
         function bewertungDurchfuehren() {
